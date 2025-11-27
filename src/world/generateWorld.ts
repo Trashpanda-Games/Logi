@@ -54,41 +54,36 @@ function generateTiles(
 ): Tile[] {
   const tiles: Tile[] = [];
 
+  // Choose noise scales so that at WORLD_WIDTH ≈ 1000 you get a similar look
+  const ELEVATION_NOISE_SCALE = 0.0036; // ≈ 3.6 / 1000
+  const MOISTURE_NOISE_SCALE = 0.0044; // tweak to taste
+
   for (let y = 0; y < WORLD_HEIGHT; y++) {
     for (let x = 0; x < WORLD_WIDTH; x++) {
-      // Normalised coords in [-1, 1]
+      // Normalised coords in [-1, 1] for masks/shaping
       const nx = (x / WORLD_WIDTH) * 2 - 1;
       const ny = (y / WORLD_HEIGHT) * 2 - 1;
 
-      // Base elevation noise
-      const e = elevationNoise(nx * 1.8, ny * 1.8) * 0.5 + 0.5; // 0..1
+      // --- Base elevation noise in *tile* space ---
+      const e = elevationNoise(x * ELEVATION_NOISE_SCALE, y * ELEVATION_NOISE_SCALE) * 0.5 + 0.5; // 0..1
 
-      // "Continent mask": land more likely away from edges
+      // "Continent mask": land more likely away from edges (still uses nx/ny)
       const distanceFromCenter = Math.sqrt(nx * nx + ny * ny); // 0 at center, ~1.4 corners
       const continentMask = 1 - smoothstep(0.9, 1.4, distanceFromCenter); // 1 near center, 0 at far edges
 
-      // Combine both to get final elevation
       let elevation = e * 0.75 + continentMask * 0.3 + ELEVATION_BIAS;
       elevation = clamp01(elevation);
 
-      // Moisture: separate noise field
-      let moisture = moistureNoise(nx * 2.2 + 100, ny * 2.2 + 100) * 0.5 + 0.5;
+      // --- Moisture noise also in tile space ---
+      let moisture =
+        moistureNoise(x * MOISTURE_NOISE_SCALE + 100, y * MOISTURE_NOISE_SCALE + 100) * 0.5 + 0.5;
       moisture = clamp01(moisture);
 
       const type = classifyTile(elevation, moisture);
 
-      tiles.push({
-        x,
-        y,
-        type,
-        elevation,
-        moisture,
-      });
+      tiles.push({ x, y, type, elevation, moisture });
     }
   }
-
-  // Add rivers on top of existing terrain
-  //carveRivers(rng, tiles);
 
   return tiles;
 }

@@ -1,5 +1,5 @@
 export class TransformHandler {
-  private scale = 8; // initial zoom
+  private scale = 0.5; // initial zoom
   private offsetX = 0;
   private offsetY = 0;
   private changed = true;
@@ -55,7 +55,7 @@ export class TransformHandler {
     const scaleY = canvasHeight / worldPixelHeight;
 
     // Use the smaller scale so the whole world fits; add a small margin
-    this.scale = Math.min(scaleX, scaleY) * 0.1;
+    this.scale = Math.min(scaleX, scaleY) * 0.95;
 
     // Centre the world in the canvas
     this.offsetX = (canvasWidth - worldPixelWidth * this.scale) / 2;

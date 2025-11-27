@@ -1,10 +1,9 @@
-import { WORLD_HEIGHT, WORLD_WIDTH } from '../world/constants';
+import { TILE_SIZE, WORLD_HEIGHT, WORLD_WIDTH } from '../world/constants';
 import type { Layer } from './layer';
 import { TransformHandler } from './transformHandler';
 
 export class GameRenderer {
   private ctx: CanvasRenderingContext2D;
-  private animationFrameId: number | null = null;
   private needsRedraw = true;
 
   constructor(
@@ -17,23 +16,19 @@ export class GameRenderer {
     this.ctx = context;
   }
 
-  markDirty() {
-    this.needsRedraw = true;
-  }
-
   initialize() {
     this.layers.forEach((l) => l.init?.());
     window.addEventListener('resize', () => this.resizeCanvas());
     this.resizeCanvas();
-    this.loop();
   }
 
   private resizeCanvas() {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
-    const worldPixelWidth = WORLD_WIDTH;
-    const worldPixelHeight = WORLD_HEIGHT;
+    const worldPixelWidth = WORLD_WIDTH * TILE_SIZE;
+    const worldPixelHeight = WORLD_HEIGHT * TILE_SIZE;
+
     this.transformHandler.fitToWorld(
       worldPixelWidth,
       worldPixelHeight,
@@ -42,21 +37,14 @@ export class GameRenderer {
     );
   }
 
+  markDirty() {
+    this.needsRedraw = true;
+  }
+
   /** Call when world data changes significantly and cached layers should rebuild */
   redraw() {
     this.layers.forEach((l) => l.redraw?.());
   }
-
-  private loop = () => {
-    // Only render if camera moved or something marked itself dirty
-    if (this.transformHandler.isChanged() || this.needsRedraw) {
-      this.renderGame();
-      this.needsRedraw = false;
-    }
-
-    this.layers.forEach((l) => l.tick?.());
-    this.animationFrameId = requestAnimationFrame(this.loop);
-  };
 
   private renderGame() {
     const ctx = this.ctx;
@@ -90,9 +78,18 @@ export class GameRenderer {
     this.transformHandler.resetChanged();
   }
 
-  dispose() {
-    if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
+  renderFrame() {
+    if (!this.transformHandler.isChanged() && !this.needsRedraw) {
+      // Still let layers tick(), but skip expensive drawing
+      this.layers.forEach((l) => l.tick?.());
+      return;
     }
+
+    this.renderGame();
+    this.layers.forEach((l) => l.tick?.());
+
+    this.needsRedraw = false;
   }
+
+  dispose() {}
 }

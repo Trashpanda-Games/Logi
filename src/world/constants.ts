@@ -1,5 +1,5 @@
 export const TILE_SIZE = 8; // pixel grid size (OpenFront-like)
-export const WORLD_WIDTH = 1000; // tiles
+export const WORLD_WIDTH = 2000; // tiles
 export const WORLD_HEIGHT = 1000; // tiles
 
 export const NUM_SETTLEMENTS = 15;

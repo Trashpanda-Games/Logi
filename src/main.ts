@@ -51,7 +51,6 @@ async function bootstrap() {
     const settlement = findSettlementAtTile(world.settlements, tileX, tileY);
     const resource = settlement ? null : findResourceAtTile(world.resources, tileX, tileY);
 
-    // 🔹 If we're in "road build" mode and clicked a valid target, build the road
     if (roadState.source && (settlement || resource)) {
       const target: RoadBuildSource | null = settlement
         ? { kind: 'settlement', settlement }
@@ -93,8 +92,14 @@ async function bootstrap() {
   initInputHandlers(canvas, transform, onCanvasClick);
 
   renderer.initialize();
-
-  startSimulation(world);
+  startSimulation(world, renderer, {
+    getSelectedResource: () => selectedResource,
+    onSelectedResourceUpdated: (resource) => {
+      updateResourcePanel(resource, (r) =>
+        setRoadSource(roadState, { kind: 'resource', resource: r }),
+      );
+    },
+  });
 
   loadingOverlay && (loadingOverlay.style.display = 'none');
 }
