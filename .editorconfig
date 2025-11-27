@@ -1,0 +1,43 @@
+# top-level EditorConfig file
+root = true
+
+# Defaults for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Use spaces, 2-space indent by default (good for TS/JS/frontend)
+indent_style = space
+indent_size = 2
+
+# TypeScript / JavaScript / JSX/TSX
+[*.{ts,tsx,js,jsx}]
+indent_style = space
+indent_size = 2
+
+# JSON (includes package.json, tsconfig.json, etc.)
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML (GitHub Actions, etc.)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# HTML
+[*.html]
+indent_style = space
+indent_size = 2
+
+# CSS / SCSS
+[*.{css,scss}]
+indent_style = space
+indent_size = 2
+
+# Markdown – don’t aggressively trim trailing spaces (they can mean line breaks)
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off

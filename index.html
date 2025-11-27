@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Logistics Prototype</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #101018;
+        color: #eee;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+      }
+
+      #game-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      #ui-panel {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        padding: 6px 10px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 10;
+      }
+
+      /* NEW: settlement info panel */
+      #settlement-panel {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 11;
+        min-width: 180px;
+      }
+
+      #resource-panel {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 11;
+        min-width: 200px;
+      }
+
+      #loading-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+
+      .loading-panel {
+        padding: 16px 24px;
+        background: #181820;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: #eee;
+        font-size: 14px;
+      }
+
+      /* simple CSS spinner */
+      .spinner {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        border-top-color: #f5d96c;
+        animation: spin 0.8s linear infinite;
+      }
+
+      .loading-text {
+        margin-top: 4px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <div id="loading-overlay">
+        <div class="loading-panel">
+          <div class="spinner"></div>
+          <div class="loading-text">Generating world…</div>
+        </div>
+      </div>
+      <canvas id="game"></canvas>
+
+      <div id="ui-panel">
+        <div><strong>Logistics Prototype</strong></div>
+        <div id="info">Click a settlement to see details.</div>
+      </div>
+
+      <div id="settlement-panel" style="display: none">
+        <div id="settlement-name" style="font-weight: bold; margin-bottom: 4px"></div>
+        <div id="settlement-pop"></div>
+        <div id="settlement-demand"></div>
+        <div id="settlement-supply"></div>
+        <button id="settlement-build-road">Build road from here</button>
+      </div>
+    </div>
+
+    <div id="resource-panel" style="display: none">
+      <div id="resource-name" style="font-weight: bold; margin-bottom: 4px"></div>
+      <div id="resource-type"></div>
+      <div id="resource-amount"></div>
+      <div id="resource-regen"></div>
+      <button id="resource-build-road">Build road from here</button>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
